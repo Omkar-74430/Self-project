@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 %matplotlib inline
 
-bdata = pd.read_csv("C:\\Users\\Spandana\\Downloads\\Case Studies\\8 Bank Fradulent\\Bank.csv")
+bdata = pd.read_csv("C:\\Users\\Omkar\\Downloads\\Case Studies\\8 Bank Fradulent\\Bank.csv")
 
 bdata.head()
 
