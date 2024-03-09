@@ -1,1 +1,190 @@
 
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+%matplotlib inline
+
+bdata = pd.read_csv("C:\\Users\\Spandana\\Downloads\\Case Studies\\8 Bank Fradulent\\Bank.csv")
+
+bdata.head()
+
+bdata.drop(['Obs','account_id'],axis=1,inplace=True)
+print(bdata.info())
+print(bdata.shape)
+
+bdata.columns
+
+#print the categorical variables if any one of them contains too many unique values. 
+#In such cases we have to do something to reduce the unique values by clubing some of them together.
+print('Sex=',bdata['sex'].unique())
+print('card=',bdata['card'].unique())
+print('Second=',bdata['second'].unique())
+print('frequency=',bdata['frequency'].unique())
+print('region=',bdata['region'].unique())
+print('good=',bdata['good'].unique())
+
+# We have confirmed the basic sanity of the data.Now we will do some visualisations.
+
+bdata.plot(kind='box', subplots=True, layout=(20,2), sharex=False, sharey=False, figsize=(20,40))
+plt.show()
+
+bdata.hist(layout=(20,2),figsize=(20,40))
+plt.show()
+
+bdata.kurtosis()
+
+bdata.skew()
+
+
+from scipy import stats
+z1=stats.zscore(bdata['cardwdln'])
+z2=stats.zscore(bdata['cardwdlt'])
+z3=stats.zscore(bdata['bankcolt'])
+z4=stats.zscore(bdata['bankcoln'])
+z5=stats.zscore(bdata['bankrn'])
+z6=stats.zscore(bdata['bankrt'])
+z7=stats.zscore(bdata['othcrt'])
+z8=stats.zscore(bdata['cardwdlnd'])
+z9=stats.zscore(bdata['cardwdltd'])
+z10=stats.zscore(bdata['othcrnd'])
+z11=stats.zscore(bdata['acardwdl'])
+
+#insert the calculated z-Score into the dataframe
+bdata.insert(0,"Z-Score_cardwdln", list(z1), True)
+bdata.insert(0,"Z-Score_cardwdlt", list(z2), True) 
+bdata.insert(0,"Z-Score_bankcolt", list(z3), True) 
+bdata.insert(0,"Z_Score_bankcoln", list(z4), True)
+bdata.insert(0,"Z_Score_bankrn", list(z5), True)
+bdata.insert(0,"Z_Score_bankrt", list(z6), True)
+bdata.insert(0,"Z_Score_othcrt", list(z7), True)
+bdata.insert(0,"Z_Score_cardwdlnd", list(z8), True)
+bdata.insert(0,"Z_Score_cardwdltd", list(z9), True)
+bdata.insert(0,"Z_Score_othcrnd", list(z10), True)
+bdata.insert(0,"Z_Score_acardwdl", list(z11), True)
+
+bdata.head()
+
+
+#testing How I can filter out the high z-scores from a single column
+bdata[bdata['Z_Score_cardwdltd']>1.96]['cardwdltd']
+
+# Filtering out the extreme z-scores from the required columns 
+# and imputing NaN values in the corresponding columns
+
+bdata.loc[bdata['Z-Score_cardwdln']>1.96,'cardwdln']=np.nan
+bdata.loc[bdata['Z-Score_cardwdln']<-1.96,'cardwdln']=np.nan
+
+bdata.loc[bdata['Z-Score_cardwdlt']>1.96,'cardwdlt']=np.nan
+bdata.loc[bdata['Z-Score_cardwdlt']<-1.96,'cardwdlt']=np.nan
+
+bdata.loc[bdata['Z-Score_bankcolt']>1.96,'bankcolt']=np.nan
+bdata.loc[bdata['Z-Score_bankcolt']<-1.96,'bankcolt']=np.nan
+
+bdata.loc[bdata['Z_Score_bankcoln']>1.96,'bankcoln']=np.nan
+bdata.loc[bdata['Z_Score_bankcoln']<-1.96,'bankcoln']=np.nan
+
+bdata.loc[bdata['Z_Score_bankrn']>1.96,'bankrn']=np.nan
+bdata.loc[bdata['Z_Score_bankrn']<-1.96,'bankrn']=np.nan
+
+bdata.loc[bdata['Z_Score_bankrt']>1.96,'bankrt']=np.nan
+bdata.loc[bdata['Z_Score_bankrt']<-1.96,'bankrt']=np.nan
+
+bdata.loc[bdata['Z_Score_othcrt']>1.96,'othcrt']=np.nan
+bdata.loc[bdata['Z_Score_othcrt']<-1.96,'othcrt']=np.nan
+
+bdata.loc[bdata['Z_Score_cardwdlnd']>1.96,'cardwdlnd']=np.nan
+bdata.loc[bdata['Z_Score_cardwdlnd']<-1.96,'cardwdlnd']=np.nan
+
+bdata.loc[bdata['Z_Score_cardwdltd']>1.96,'cardwdltd']=np.nan
+bdata.loc[bdata['Z_Score_cardwdltd']<-1.96,'cardwdltd']=np.nan
+
+bdata.loc[bdata['Z_Score_othcrnd']>1.96,'othcrnd']=np.nan
+bdata.loc[bdata['Z_Score_othcrnd']<-1.96,'othcrnd']=np.nan
+
+bdata.loc[bdata['Z_Score_acardwdl']>1.96,'acardwdl']=np.nan
+bdata.loc[bdata['Z_Score_acardwdl']<-1.96,'acardwdl']=np.nan
+
+bdata.info()
+
+# save a copy of the data to disc.
+bdata.to_csv('C:\\Users\\Omkar\\Downloads\\Case Studies\\8 Bank Fradulent\\Bank_see.csv')
+
+# imputing the median values in place of the NaN values
+bdata['cardwdln']=bdata['cardwdln'].fillna(bdata['cardwdln'].median())
+bdata['cardwdlt']=bdata['cardwdlt'].fillna(bdata['cardwdlt'].median())
+bdata['bankcolt']=bdata['bankcolt'].fillna(bdata['bankcolt'].median())
+bdata['bankcoln']=bdata['bankcoln'].fillna(bdata['bankcoln'].median())
+bdata['bankrn']=bdata['bankrn'].fillna(bdata['bankrn'].median())
+bdata['bankrt']=bdata['bankrt'].fillna(bdata['bankrt'].median())
+bdata['othcrt']=bdata['othcrt'].fillna(bdata['othcrt'].median())
+bdata['cardwdlnd']=bdata['cardwdlnd'].fillna(bdata['cardwdlnd'].median())
+bdata['othcrnd']=bdata['othcrnd'].fillna(bdata['othcrnd'].median())
+bdata['acardwdl']=bdata['acardwdl'].fillna(bdata['acardwdl'].median())
+bdata['cardwdltd']=bdata['cardwdltd'].fillna(bdata['cardwdltd'].median())
+
+# getting rid of the z-Score columns
+bdata=bdata.drop(['Z-Score_cardwdln', 'Z-Score_cardwdlt','Z-Score_bankcolt','Z_Score_bankcoln','Z_Score_bankrn','Z_Score_bankrt','Z_Score_othcrt','Z_Score_cardwdlnd','Z_Score_cardwdltd','Z_Score_othcrnd','Z_Score_acardwdl'], axis=1)
+bdata.shape
+
+bdata.plot(kind='box', subplots=True, layout=(16,2), sharex=False, sharey=False,figsize=(20, 40))
+plt.show()
+
+# Split the features and the target variables first
+x=bdata.iloc[:,0:37]
+y=bdata.iloc[:,-1]
+
+import seaborn as sns
+%matplotlib inline
+
+# calculate the correlation matrix
+corr = x.corr()
+
+# plot the heatmap
+sns.heatmap(corr, 
+        xticklabels=corr.columns,
+        yticklabels=corr.columns)
+#The following code will create dummy variables and also give appropriate column names for them. You just input the list of columns to be encoded
+
+cat_vars=['sex','card','second','frequency','region']
+for var in cat_vars:
+    cat_list='var'+'_'+var
+    cat_list = pd.get_dummies(x[var], prefix=var)
+    data1=x.join(cat_list)
+    x=data1
+cat_vars=['sex','card','second','frequency','region']
+data_vars=x.columns.values.tolist()
+to_keep=[i for i in data_vars if i not in cat_vars]
+
+#Our final data columns will be:
+
+x_data_final=x[to_keep]
+x_data_final.columns.values
+
+#Encode the y variable as well
+from sklearn.preprocessing import LabelEncoder
+labelencoder_y=LabelEncoder()
+y_data_final=labelencoder_y.fit_transform(y)
+y_data_final
+
+#Modeling
+from sklearn.metrics import confusion_matrix , classification_report
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+
+# Creating test- Train splits
+x_train,x_test,y_train,y_test=train_test_split(x_data_final,y_data_final,test_size=0.2, random_state=42)
+
+# create the claassifier
+logreg=LogisticRegression(max_iter=500)
+
+#fit the classifier to the training data
+logres1 = logreg.fit(x_train,y_train)
+
+#predict th lebels of the test set
+y_pred=logreg.predict(x_test)
+
+# compute and print the confision martis and the classification report
+print(confusion_matrix(y_test,y_pred))
+
